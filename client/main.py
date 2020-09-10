@@ -2,34 +2,34 @@ import socket
 import select
 import sys
 
-# some constants
-USE_PORT    = 32007
+USE_PORT = 32007
 BUFFER_SIZE = 1024
+
 
 def main():
     protocol = input("Please choose protocol (TCP / UDP / UDS): ").lower()
     if protocol == "tcp" or protocol == "udp":
-        sockFamily = socket.AF_INET
-        sockType = socket.SOCK_STREAM if protocol == "tcp" else socket.SOCK_DGRAM
-        host = input("Please insert server IP address: ")
+        sock_family = socket.AF_INET
+        sock_type = socket.SOCK_STREAM if protocol == "tcp" else socket.SOCK_DGRAM
+        host = input("Please insert server IP address (click enter for local host address): ")
         if ":" in host:
-            sockFamily = socket.AF_INET6
+            sock_family = socket.AF_INET6
         port = int(input("Please insert server port: "))
     elif protocol == "uds":
-        sockFamily = socket.AF_UNIX
-        sockType = socket.SOCK_STREAM
-        sockFile = input("Please insert path to server socket file: ")
+        sock_family = socket.AF_UNIX
+        sock_type = socket.SOCK_STREAM
+        sock_file = input("Please insert path to server socket file: ")
     else:
         print("Unknown protocol")
         return
 
     try:
-        server = socket.socket(sockFamily, sockType)
+        server = socket.socket(sock_family, sock_type)
         if protocol == "uds":
-            print("UDS: connecting to "+sockFile)
-            server.connect(sockFile)
+            print("UDS: connecting to " + sock_file)
+            server.connect(sock_file)
         else:
-            print("connecting to " + host + ":"+str(port))
+            print("connecting to " + host + ":" + str(port))
             server.connect((host, port))
 
     except Exception as e:
