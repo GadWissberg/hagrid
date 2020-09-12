@@ -11,10 +11,9 @@ def main():
     if protocol == "tcp" or protocol == "udp":
         sock_family = socket.AF_INET
         sock_type = socket.SOCK_STREAM if protocol == "tcp" else socket.SOCK_DGRAM
-        host = input("Please insert server IP address (click enter for local host address): ")
+        host = get_server_ip()
         if ":" in host:
             sock_family = socket.AF_INET6
-        port = int(input("Please insert server port: "))
     elif protocol == "uds":
         sock_family = socket.AF_UNIX
         sock_type = socket.SOCK_STREAM
@@ -29,8 +28,8 @@ def main():
             print("UDS: connecting to " + sock_file)
             server.connect(sock_file)
         else:
-            print("connecting to " + host + ":" + str(port))
-            server.connect((host, port))
+            print("connecting to " + host + ":" + str(USE_PORT))
+            server.connect((host, USE_PORT))
 
     except Exception as e:
         print("Can't connect to server, please make sure that:\n"
@@ -60,6 +59,14 @@ def main():
                 message = sys.stdin.readline()
                 server.send(message.encode())
                 print("<You> "+message)
+
+
+def get_server_ip():
+    host = input("Please insert server IP address (click enter for local host address): ")
+    if host == "":
+        host = socket.gethostbyname(socket.gethostname())
+    return host
+
 
 if __name__ == '__main__':
     main()
