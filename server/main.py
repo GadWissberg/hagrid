@@ -1,7 +1,7 @@
 import socket
 import sys
 import os
-import ClientThread
+from ClientThread import ClientThread
 
 
 USE_PORT = 32007
@@ -15,8 +15,8 @@ connected_clients = []
 def main():
     try:
         # TODO uncomment lines for debug
-        # sys.argv.append("TCP")
-        # sys.argv.append("ipv4")
+        sys.argv.append("TCP")
+        sys.argv.append("ipv4")
 
         sock_type, sock_bind, sock_family, ip_addr = get_protocol_attributes()
         server_socket = socket.socket(sock_family, sock_type)
