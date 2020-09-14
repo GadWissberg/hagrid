@@ -3,14 +3,12 @@ import sys
 import os
 from threading import *
 
-
 USE_PORT = 32007
 BUFFER_SIZE = 1024
 SOCKET_PATH = "chat.sock"  # TODO: same as above
 BACKLOG_SIZE = 10
 
 connected_clients = []
-
 
 class ClientThread(Thread):
     def __init__(self, client, ipaddr):
@@ -68,13 +66,21 @@ class ClientThread(Thread):
         print("client lost connection")
         return connected_clients.remove(client)
 
-
 def main():
     try:
         # TODO uncomment lines for debug
-        sys.argv.append("TCP")
-        sys.argv.append("ipv4")
+        #sys.argv.append("TCP")
+        #sys.argv.append("ipv4")
 
+        # print system info
+        system_info = get_system_info()
+        print("Welcome to Chat server!")
+        print("\nRunning under the following system:")
+        print("CPU:", system_info['cpu'],
+              "\nMemory:", str(system_info['memory']['used']) + "GB", "used of", str(system_info['memory']['available']) +"GB total",
+              "\nLoad average:", system_info['loadavg'][0], " 1 minute,", system_info['loadavg'][1], "5 minutes,", system_info['loadavg'][2], "15 minutes\n\n")
+
+        # get protocol attributes by user selection and create proper socket
         sock_type, sock_bind, sock_family, ip_addr = get_protocol_attributes()
         server_socket = socket.socket(sock_family, sock_type)
 
@@ -153,6 +159,35 @@ def get_protocol_attributes():
 
     return sock_type, sock_bind, sock_family, ip_addr
 
+def get_system_info():
+    # get some system information from /proc file-system
+
+    # Get CPU info
+    with open("/proc/cpuinfo", "r") as f:
+        cpuinfo = f.readlines()
+        cpu = [cpu.strip().split(":")[1].strip() for cpu in cpuinfo if "model name" in cpu]
+
+    # get memory info
+    with open("/proc/meminfo", "r") as f:
+        meminfo = f.readlines()
+        free_ram = round(int(meminfo[1].split(":")[1].strip().split(" ")[0]) / 1024 / 1024, 2)  # free memory in GB
+        avail_ram = round(int(meminfo[2].split(":")[1].strip().split(" ")[0])/1024/1024, 2)  # available memory in GB
+        used_ram = round(avail_ram - free_ram, 2)
+
+    # get system load average
+    with open("/proc/loadavg", "r") as f:
+        load = f.read().split(" ")
+        load_1 = load[0]  # 1 min avg
+        load_5 = load[1]  # 5 min avg
+        load_15 = load[2]  # 15 min avg
+
+    res = {
+            "cpu": cpu[0],
+            "memory": {"used": used_ram, "available": avail_ram, "free": free_ram},
+            "loadavg": [load_1, load_5, load_15]
+    }
+
+    return res
 
 if __name__ == '__main__':
     main()
