@@ -59,6 +59,14 @@ def main():
                 message = sys.stdin.readline()
                 server.send(message.encode())
                 print("<You> "+message)
+            if message == "Bye":
+                message = "Leaving the Chat Room"
+                socket.send(message.encode())
+                print("\n")
+                break
+
+
+
 
 
 def get_server_ip():
