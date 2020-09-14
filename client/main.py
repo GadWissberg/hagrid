@@ -41,14 +41,15 @@ def main():
 
 
     # list of available input streams
-    streams = [sys.stdin, server]
+    inputs = [server]
+    outputs = []
 
     # TODO:
     # allow client to choose his own nickname
     #name = input("Enter your name: ")
 
     while True:
-        readSock, writeSock, errSock = select.select(streams, [], [])
+        readSock, writeSock, errSock = select.select(inputs, outputs, inputs)
         for sock in readSock:
             if sock == server:
                 # message received from server -> print to client
