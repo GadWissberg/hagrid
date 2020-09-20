@@ -29,21 +29,25 @@ class ClientThread(Thread):
             try:
                 chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
-                FileAPI.copy_msg_to_file(message, chat_history_file_name)
-                self.send_message(message, self.client, self.ipaddr)
+                FileAPI.write_msg_into_history_file(message.decode(), chat_history_file_name)
+                if message is 'get_history':
+                    self.send_client_history()
+                else:
+                    self.send_message(message, self.client, self.ipaddr)
             except Exception as e:
                 print("clientThread Exception: " + str(e))
                 continue
 
     def send_message(self, msg, src_client, ip):
-        # broadcast message to all available clients, except the one who send the message
+        """
+        broadcast message to all available clients, except the one who send the message
+        """
 
         # TODO: fix this if condition (do not work)
         if msg == "":
             return False
 
         # it's possible to print here (to server console) "received message XXX from client YYY"
-
         for client in connected_clients:
             if client != src_client:
                 try:
@@ -65,6 +69,15 @@ class ClientThread(Thread):
         print(client)
         print("client lost connection")
         return connected_clients.remove(client)
+
+    def send_client_history(self):
+        try:
+            msg = ("\n" + FileAPI.get_client_history).encode()
+            self.client.send(msg)
+        except Exception as e:
+            print("sendMessage Exception: " + str(e))
+            self.client.close()
+            self.drop_connection(self.client)
 
 
 def main():

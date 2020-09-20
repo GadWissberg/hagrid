@@ -1,14 +1,15 @@
 class FileAPI:
+    # TODO check if message is in bytes or normal string (linux machine needed)
 
     @staticmethod
-    def copy_msg_to_file(message, chat_history_file_name):
+    def write_msg_into_history_file(message, chat_history_file_name):
         file = open(chat_history_file_name, 'a')
-        # TODO check if message is in bytes or normal string (linux machine needed)
         file.write(message + '\n')
-        content = file.read()
         file.close()
 
-
-# TODO for debugging api file
-if __name__ == '__main__':
-    FileAPI.copy_msg_to_file("1_2_3.txt")
+    @staticmethod
+    def get_client_history(chat_history_file_name):
+        file = open(chat_history_file_name, 'r')
+        file_content = file.read()
+        file.close()
+        return file_content
