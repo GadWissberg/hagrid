@@ -4,6 +4,8 @@ import os
 import platform
 from threading import *
 
+from FileAPI import FileAPI
+
 USE_PORT = 32007
 BUFFER_SIZE = 1024
 SOCKET_PATH = "chat.sock"
@@ -27,7 +29,7 @@ class ClientThread(Thread):
             try:
                 chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
-                FileApi.copy_msg_to_file(chat_history_file_name)
+                FileAPI.copy_msg_to_file(chat_history_file_name)
                 self.send_message(message, self.client, self.ipaddr)
             except Exception as e:
                 print("clientThread Exception: " + str(e))
