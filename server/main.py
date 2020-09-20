@@ -25,25 +25,24 @@ class ClientThread(Thread):
 
         while True:
             try:
+                chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
+                FileApi.copy_msg_to_file(chat_history_file_name)
                 self.send_message(message, self.client, self.ipaddr)
             except Exception as e:
                 print("clientThread Exception: " + str(e))
-
                 continue
 
     def send_message(self, msg, src_client, ip):
         # broadcast message to all available clients, except the one who send the message
 
         # TODO: fix this if condition (do not work)
-        # msg type is "bytes" class
         if msg == "":
             return False
 
         # it's possible to print here (to server console) "received message XXX from client YYY"
 
         for client in connected_clients:
-            # do not send to source client
             if client != src_client:
                 try:
                     msg = "<" + ip + "> " + msg.decode()
@@ -72,15 +71,13 @@ def main():
         # sys.argv.append("TCP")
         # sys.argv.append("ipv4")
 
-        # print system info
-        system_info = get_system_info()
         print("Welcome to Chat server!")
         print("\nRunning under the following system:")
+
+        system_info = get_system_info()
         print("CPU:", system_info['cpu'],
               "\nMemory:", str(system_info['memory']['used']) + "GB", "used of", str(system_info['memory']['available']) +"GB total",
               "\nLoad average:", system_info['loadavg'][0], " 1 minute,", system_info['loadavg'][1], "5 minutes,", system_info['loadavg'][2], "15 minutes\n\n")
-
-
 
         # get protocol attributes by user selection and create proper socket
         sock_type, sock_bind, sock_family, ip_addr = get_protocol_attributes()
