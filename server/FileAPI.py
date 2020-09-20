@@ -1,6 +1,6 @@
 import errno
-import time
 import fcntl
+import time
 
 
 class FileAPI:
@@ -31,5 +31,3 @@ class FileAPI:
         file_content = file.read()
         file.close()
         return file_content
-
-
