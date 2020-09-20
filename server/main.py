@@ -82,10 +82,6 @@ class ClientThread(Thread):
 
 def main():
     try:
-        # TODO uncomment lines for debug
-        # sys.argv.append("TCP")
-        # sys.argv.append("ipv4")
-
         print("Welcome to Chat server!")
         print("\nRunning under the following system:")
 
