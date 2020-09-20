@@ -202,5 +202,16 @@ def get_system_info():
     return res
 
 
+@staticmethod
+def install_and_import(package):
+    import importlib
+    try:
+        importlib.import_module(package)
+    except ImportError:
+        import pip
+        pip.main(['install', package])
+
+
 if __name__ == '__main__':
+    install_and_import("fcntl")
     main()
