@@ -5,6 +5,7 @@ class FileAPI:
         file = open(chat_history_file_name, 'a')
         # TODO check if message is in bytes or normal string (linux machine needed)
         file.write(message + '\n')
+        content = file.read()
         file.close()
 
 
