@@ -30,7 +30,7 @@ class ClientThread(Thread):
                 chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
                 FileAPI.write_msg_into_history_file(message.decode(), chat_history_file_name)
-                if message is 'get_history':
+                if message.decode() is 'get_history':
                     self.send_client_history()
                 else:
                     self.send_message(message, self.client, self.ipaddr)
