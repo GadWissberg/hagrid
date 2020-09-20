@@ -29,7 +29,7 @@ class ClientThread(Thread):
             try:
                 chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
-                FileAPI.copy_msg_to_file(chat_history_file_name)
+                FileAPI.copy_msg_to_file(message, chat_history_file_name)
                 self.send_message(message, self.client, self.ipaddr)
             except Exception as e:
                 print("clientThread Exception: " + str(e))
