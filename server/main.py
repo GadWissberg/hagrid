@@ -1,14 +1,16 @@
 import socket
 import sys
 import os
+import platform
 from threading import *
 
 USE_PORT = 32007
 BUFFER_SIZE = 1024
-SOCKET_PATH = "chat.sock"  # TODO: same as above
+SOCKET_PATH = "chat.sock"
 BACKLOG_SIZE = 10
 
 connected_clients = []
+
 
 class ClientThread(Thread):
     def __init__(self, client, ipaddr):
@@ -23,28 +25,24 @@ class ClientThread(Thread):
 
         while True:
             try:
+                chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
+                FileApi.copy_msg_to_file(chat_history_file_name)
                 self.send_message(message, self.client, self.ipaddr)
             except Exception as e:
                 print("clientThread Exception: " + str(e))
-
-                # TODO:
-                # disconnect client (connection timed-out / aborted / something happened)
-                # stop thread and handle everything else
                 continue
 
     def send_message(self, msg, src_client, ip):
         # broadcast message to all available clients, except the one who send the message
 
         # TODO: fix this if condition (do not work)
-        # msg type is "bytes" class
         if msg == "":
             return False
 
         # it's possible to print here (to server console) "received message XXX from client YYY"
 
         for client in connected_clients:
-            # do not send to source client
             if client != src_client:
                 try:
                     msg = "<" + ip + "> " + msg.decode()
@@ -66,16 +64,17 @@ class ClientThread(Thread):
         print("client lost connection")
         return connected_clients.remove(client)
 
+
 def main():
     try:
         # TODO uncomment lines for debug
-        #sys.argv.append("TCP")
-        #sys.argv.append("ipv4")
+        # sys.argv.append("TCP")
+        # sys.argv.append("ipv4")
 
-        # print system info
-        system_info = get_system_info()
         print("Welcome to Chat server!")
         print("\nRunning under the following system:")
+
+        system_info = get_system_info()
         print("CPU:", system_info['cpu'],
               "\nMemory:", str(system_info['memory']['used']) + "GB", "used of", str(system_info['memory']['available']) +"GB total",
               "\nLoad average:", system_info['loadavg'][0], " 1 minute,", system_info['loadavg'][1], "5 minutes,", system_info['loadavg'][2], "15 minutes\n\n")
@@ -159,13 +158,15 @@ def get_protocol_attributes():
 
     return sock_type, sock_bind, sock_family, ip_addr
 
+
 def get_system_info():
     # get some system information from /proc file-system
 
-    # Get CPU info
-    with open("/proc/cpuinfo", "r") as f:
-        cpuinfo = f.readlines()
-        cpu = [cpu.strip().split(":")[1].strip() for cpu in cpuinfo if "model name" in cpu]
+    operating_system = platform.system()
+    if operating_system is not "Linux":
+        raise Exception("You must run this application on a Linux machine. you are currently running it on: " + operating_system)
+
+    cpu = platform.processor()
 
     # get memory info
     with open("/proc/meminfo", "r") as f:
@@ -182,12 +183,13 @@ def get_system_info():
         load_15 = load[2]  # 15 min avg
 
     res = {
-            "cpu": cpu[0],
+            "cpu": cpu,
             "memory": {"used": used_ram, "available": avail_ram, "free": free_ram},
             "loadavg": [load_1, load_5, load_15]
     }
 
     return res
+
 
 if __name__ == '__main__':
     main()

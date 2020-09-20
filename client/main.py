@@ -66,9 +66,6 @@ def main():
                 break
 
 
-
-
-
 def get_server_ip():
     host = input("Please insert server IP address (click enter for local host address): ")
     if host == "":
