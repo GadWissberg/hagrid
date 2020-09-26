@@ -36,7 +36,7 @@ def main():
               "1. server is running\n"
               "2. you have provided right connection information")
 
-        print("Exception: "+str(e))
+        #print("Exception: "+str(e))
         return
 
 

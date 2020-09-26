@@ -30,7 +30,7 @@ class ClientThread(Thread):
                 chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
                 FileAPI.write_msg_into_history_file(message.decode(), chat_history_file_name)
-                if message.decode() is 'get_history':
+                if message.decode() == 'get_history':
                     self.send_client_history()
                 else:
                     self.send_message(message, self.client, self.ipaddr)
@@ -42,10 +42,6 @@ class ClientThread(Thread):
         """
         broadcast message to all available clients, except the one who send the message
         """
-
-        # TODO: fix this if condition (do not work)
-        if msg == "":
-            return False
 
         # it's possible to print here (to server console) "received message XXX from client YYY"
         for client in connected_clients:
@@ -174,10 +170,13 @@ def get_system_info():
     # get some system information from /proc file-system
 
     operating_system = platform.system()
-    if operating_system is not "Linux":
+    if operating_system != "Linux":
         raise Exception("You must run this application on a Linux machine. you are currently running it on: " + operating_system)
 
-    cpu = platform.processor()
+    with open("/proc/cpuinfo", "r") as f:
+        cpuinfo = f.readlines()
+        cpu = [cpu.strip().split(":")[1].strip() for cpu in cpuinfo if "model name" in cpu]
+        cpu = cpu[0]  # get only 1st core
 
     # get memory info
     with open("/proc/meminfo", "r") as f:
