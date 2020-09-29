@@ -27,7 +27,7 @@ class ClientThread(Thread):
 
         while self.active:
             try:
-                chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
+                chat_history_file_name = self.ipaddr + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
                 # Do not process empty messages
                 if len(message) < 2:
@@ -68,8 +68,9 @@ class ClientThread(Thread):
         return connected_clients.remove(client)
 
     def send_client_history(self):
+        chat_history_file_name = self.ipaddr + ".txt"
         try:
-            msg = ("\n" + FileAPI.get_client_history).encode()
+            msg = ("\n" + FileAPI.get_client_history(chat_history_file_name)).encode()
             self.client.send(msg)
         except Exception as e:
             print("sendMessage Exception: " + str(e))

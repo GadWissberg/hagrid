@@ -35,8 +35,6 @@ def main():
         print("Can't connect to server, please make sure that:\n"
               "1. server is running\n"
               "2. you have provided right connection information")
-
-        #print("Exception: "+str(e))
         return
 
 
