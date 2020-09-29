@@ -39,7 +39,7 @@ class ClientThread(Thread):
                 else:
                     self.send_message(message, self.client, self.ipaddr)
             except Exception:
-                raise Exception("A client has left the chat")
+                raise Exception("A client has left the chat") from None
 
     def send_message(self, msg, src_client, ip):
         """
