@@ -13,7 +13,6 @@ BACKLOG_SIZE = 10
 
 connected_clients = []
 
-
 class ClientThread(Thread):
     def __init__(self, client, ipaddr):
         Thread.__init__(self)
@@ -34,7 +33,7 @@ class ClientThread(Thread):
                     continue
 
                 FileAPI.write_msg_into_history_file(message.decode(), chat_history_file_name)
-                if message.decode() == 'get_history':
+                if message.decode().strip() == 'get_history':
                     self.send_client_history()
                 else:
                     self.send_message(message, self.client, self.ipaddr)
