@@ -13,6 +13,7 @@ BACKLOG_SIZE = 10
 
 connected_clients = []
 
+
 class ClientThread(Thread):
     def __init__(self, client, ipaddr):
         Thread.__init__(self)
@@ -37,8 +38,8 @@ class ClientThread(Thread):
                     self.send_client_history()
                 else:
                     self.send_message(message, self.client, self.ipaddr)
-            except Exception as e:
-                print("clientThread Exception: " + str(e))
+            except Exception:
+                raise Exception("A client has left the chat")
                 continue
 
     def send_message(self, msg, src_client, ip):
@@ -118,15 +119,12 @@ def main():
 
             connected_clients.append(connection)
 
-            try:
-                if sys.argv[1] == 'uds':
-                    print("client connected to this server " + str(len(connected_clients)) + " clients are connected)")
-                    ClientThread(connection, "")
-                else:
-                    print("client " + clientIP[0] + " connected to this server (" + str(len(connected_clients)) + " clients are connected)")
-                    ClientThread(connection, clientIP[0])
-            except OSError:
-                print("A client has left")
+            if sys.argv[1] == 'uds':
+                print("client connected to this server " + str(len(connected_clients)) + " clients are connected)")
+                ClientThread(connection, "")
+            else:
+                print("client " + clientIP[0] + " connected to this server (" + str(len(connected_clients)) + " clients are connected)")
+                ClientThread(connection, clientIP[0])
     except Exception as e:
         print(e)
 
