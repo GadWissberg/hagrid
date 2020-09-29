@@ -28,7 +28,6 @@ class ClientThread(Thread):
             try:
                 chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
-
                 # Do not process empty messages
                 if len(message) < 2:
                     continue
@@ -40,7 +39,6 @@ class ClientThread(Thread):
                     self.send_message(message, self.client, self.ipaddr)
             except Exception:
                 raise Exception("A client has left the chat")
-                continue
 
     def send_message(self, msg, src_client, ip):
         """
@@ -55,7 +53,7 @@ class ClientThread(Thread):
                     msg = msg.encode()
                     client.send(msg)
                 except Exception as e:
-                    print("sendMessage Exception: " + str(e))
+                    print("closing connection for a client")
                     client.close()
                     self.drop_connection(client)
 
