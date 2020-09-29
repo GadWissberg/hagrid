@@ -41,8 +41,6 @@ def main():
     # list of available input streams
     streams = [sys.stdin, server]
 
-    # TODO:
-    # allow client to choose his own nickname
     #name = input("Enter your name: ")
 
     while True:
