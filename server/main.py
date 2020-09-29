@@ -118,12 +118,15 @@ def main():
 
             connected_clients.append(connection)
 
-            if sys.argv[1] == 'uds':
-                print("client connected to this server " + str(len(connected_clients)) + " clients are connected)")
-                ClientThread(connection, "")
-            else:
-                print("client " + clientIP[0] + " connected to this server (" + str(len(connected_clients)) + " clients are connected)")
-                ClientThread(connection, clientIP[0])
+            try:
+                if sys.argv[1] == 'uds':
+                    print("client connected to this server " + str(len(connected_clients)) + " clients are connected)")
+                    ClientThread(connection, "")
+                else:
+                    print("client " + clientIP[0] + " connected to this server (" + str(len(connected_clients)) + " clients are connected)")
+                    ClientThread(connection, clientIP[0])
+            except OSError:
+                print("A client has left")
     except Exception as e:
         print(e)
 
