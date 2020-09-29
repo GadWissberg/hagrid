@@ -13,13 +13,11 @@ BACKLOG_SIZE = 10
 
 connected_clients = []
 
-
 class ClientThread(Thread):
     def __init__(self, client, ipaddr):
         Thread.__init__(self)
         self.client = client
         self.ipaddr = ipaddr
-        # self.name = "" TODO: add support for client name/nick
         self.start()
 
     def run(self):
@@ -29,6 +27,11 @@ class ClientThread(Thread):
             try:
                 chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
+
+                # Do not process empty messages
+                if len(message) < 2:
+                    continue
+
                 FileAPI.write_msg_into_history_file(message.decode(), chat_history_file_name)
                 if message.decode() == 'get_history':
                     self.send_client_history()
