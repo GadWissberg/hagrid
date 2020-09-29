@@ -19,12 +19,13 @@ class ClientThread(Thread):
         Thread.__init__(self)
         self.client = client
         self.ipaddr = ipaddr
+        self.active = True
         self.start()
 
     def run(self):
         self.client.send(b"Welcome to chat server!")
 
-        while True:
+        while self.active:
             try:
                 chat_history_file_name = self.ipaddr.replace(".", "_") + ".txt"
                 message = self.client.recv(BUFFER_SIZE)
@@ -57,15 +58,13 @@ class ClientThread(Thread):
                     client.close()
                     self.drop_connection(client)
 
-    @staticmethod
-    def drop_connection(client):
+    def drop_connection(self, client):
         # remove client from our clients list
         if client not in connected_clients:
             return False
 
-        print(type(client))
-        print(client)
         print("client lost connection")
+        self.active = False
         return connected_clients.remove(client)
 
     def send_client_history(self):
@@ -108,12 +107,9 @@ def main():
 
         while True:
             if sys.argv[1] == 'udp':
-                # UDP protocol DO NOT listen to incoming messages, instead of socket.listen() we should just receive messages with socket.revcfrom()
                 data, addr = server_socket.recvfrom(BUFFER_SIZE)
             else:
                 connection, clientIP = server_socket.accept()
-
-            # TODO handle UDP connection based, as it's not possible to use the same logic as TCP/UDS uses
 
             connected_clients.append(connection)
 
